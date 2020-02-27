@@ -31,7 +31,7 @@ function Rotation (config) {
   this.minTimeBetweenJwksRequests = config.minTimeBetweenJwksRequests;
   this.jwks = [];
   this.lastTimeRequesTime = 0;
-  this.publicKeyUrl = config.publicKeyUrl || this.realmUrl + '/protocol/openid-connect/certs';
+  this.publicKeyUrl = (config.publicKeyUrl || this.realmUrl) + '/protocol/openid-connect/certs';
 }
 
 Rotation.prototype.retrieveJWKs = function retrieveJWKs (callback) {
