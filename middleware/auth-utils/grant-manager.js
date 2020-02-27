@@ -414,16 +414,22 @@ GrantManager.prototype.validateGrant = function validateGrant (grant) {
 GrantManager.prototype.validateToken = function validateToken (token, expectedType) {
   return new Promise((resolve, reject) => {
     if (!token) {
+      console.log('invalid token (missing)');
       reject(new Error('invalid token (missing)'));
     } else if (token.isExpired()) {
       reject(new Error('invalid token (expired)'));
+      console.log('invalid token (expired)');
     } else if (!token.signed) {
       reject(new Error('invalid token (not signed)'));
+      console.log('invalid token (not signed)');
     } else if (token.content.typ !== expectedType) {
       reject(new Error('invalid token (wrong type)'));
+      console.log('invalid token (wrong type)');
     } else if (token.content.iat < this.notBefore) {
       reject(new Error('invalid token (stale token)'));
+      console.log('invalid token (stale token)');
     } else if (token.content.iss !== this.realmUrl) {
+      console.log('invalid token (wrong ISS)');
       reject(new Error('invalid token (wrong ISS)'));
     } else {
       const verify = crypto.createVerify('RSA-SHA256');
