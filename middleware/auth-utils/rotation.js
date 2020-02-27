@@ -18,6 +18,7 @@ const URL = require('url');
 const http = require('http');
 const https = require('https');
 const jwkToPem = require('jwk-to-pem');
+const fetch = require('node-fetch');
 
 /**
  * Construct a Rotation instance
@@ -34,24 +35,19 @@ function Rotation (config) {
 }
 
 Rotation.prototype.retrieveJWKs = function retrieveJWKs (callback) {
+  if (this.realmUrl.endsWith('/')) {
+    this.realmUrl = this.realmUrl.substring(0, this.realmUrl.length - 1);
+  }
   const url = this.realmUrl + '/protocol/openid-connect/certs';
   const options = URL.parse(url);
   options.method = 'GET';
-  const promise = new Promise((resolve, reject) => {
-    const req = getProtocol(options).request(options, (response) => {
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        return reject(new Error('Error fetching JWK Keys'));
-      }
-      let json = '';
-      response.on('data', (d) => (json += d.toString()));
-      response.on('end', () => {
-        const data = JSON.parse(json);
-        if (data.error) reject(data);
-        else resolve(data);
-      });
-    });
-    req.on('error', reject);
-    req.end();
+  const promise = fetch(url, {
+    method: 'GET',
+  }).then(docs => {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      return reject(new Error('Error fetching JWK Keys'));
+    }
+    return docs.json();
   });
   return nodeify(promise, callback);
 };
